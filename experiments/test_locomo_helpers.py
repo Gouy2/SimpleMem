@@ -9,6 +9,19 @@ from experiments.freeze_design import make_design
 
 
 class LoCoMoHelperTests(unittest.TestCase):
+    def test_method_trace_carries_task_identity(self):
+        from types import SimpleNamespace
+        from experiments.pipeline_smoke import PipelineTrace
+        from simplemem.core.utils.api_metrics import api_event_context
+        obj = SimpleNamespace(method=lambda: ["result"])
+        trace = PipelineTrace()
+        trace.wrap(obj, "method", "retrieval")
+        with api_event_context(trial=1, sample_id="conv-26", qa_index=3, condition="baseline"):
+            self.assertEqual(obj.method(), ["result"])
+        event = trace.events[0]
+        self.assertEqual((event["trial"], event["qa_index"], event["condition"]), (1, 3, "baseline"))
+        self.assertEqual(event["result_count"], 1)
+
     def test_scores_match_author_implementation(self):
         tree = ast.parse((REPO_ROOT / "test_locomo10.py").read_text())
         functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)

@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from experiments.bootstrap import REPO_ROOT, load_environment
 from experiments.locomo import DATA_SHA256, conversation_to_dialogues, load_dataset, memory_digest, score_answer
 from experiments.usage import summarize_usage
+from simplemem.core.utils.api_metrics import current_api_event_context
 
 
 def finalize_usage(result, run_dir):
@@ -38,7 +39,7 @@ class PipelineTrace:
         @functools.wraps(original)
         def traced(*args, **kwargs):
             started = time.perf_counter()
-            event = {"stage": stage}
+            event = {**current_api_event_context(), "stage": stage}
             if stage == "memory_window":
                 event["dialogue_ids"] = [d.dialogue_id for d in args[0]]
             try:

@@ -74,6 +74,22 @@ rows and counted separately; this convention will be explicit in the report.
 - No dollar estimate for DeepSeek is invented from tokens; OpenRouter's returned
   embedding costs are recorded when available.
 
+## Pre-run measurement audit
+
+The completed pilot had no invalid responses and executed conditions serially.
+Before formal concurrency, logging was hardened so an invalid chat response counts
+as one request, and task metadata propagates through nested retrieval/build worker
+pools. Formal rows must be attributed by trial/sample/question/condition tags,
+never by slicing a shared log by line number. Run each condition as a separate
+batch if sharing one mutable system instance. Record upstream fallback paths and
+failed windows explicitly; a function returning normally is not sufficient proof
+of successful retrieval. The frozen question list and treatment are unchanged.
+
+The paper's token-cost accounting has not been established as equivalent to our
+sum over all planning/reflection/answer calls. Do not divide those numbers to claim
+a reproduced efficiency multiplier. Likewise, more or fewer memory records do not
+by themselves establish lossless compression or a token compression ratio.
+
 ## Development pilot (not a formal trial)
 
 The complete `conv-26` conversation (419 turns, 19 sessions) produced 439 memories

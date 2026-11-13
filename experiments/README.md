@@ -62,6 +62,9 @@ reuse embeddings and therefore issue fewer billable requests.
 - Set `SIMPLEMEM_API_LOG` to enable JSONL request metadata. Logs contain model IDs,
   usage, latency, completion status and safe error metadata, without prompts,
   API keys, chat content or reasoning content. Raw run logs live in ignored `.runs/`.
+- `api_event_context` adds task IDs to request events; `submit_with_context`
+  propagates them through nested thread pools. Use tags to attribute concurrent
+  costs. Invalid chat responses are counted once, retaining their billable usage.
 - Usage from OpenRouter includes reported cost when supplied. DeepSeek usage is
   recorded as tokens/cache hits; no unverified dollar estimate is fabricated.
 

@@ -11,6 +11,7 @@ from simplemem.core.models.memory_entry import MemoryEntry
 from simplemem.core.utils.llm_client import LLMClient
 from simplemem.core.database.vector_store import VectorStore
 from simplemem.core.settings import settings as config
+from simplemem.core.utils.api_metrics import submit_with_context
 import re
 from datetime import datetime, timedelta
 import dateparser
@@ -569,7 +570,7 @@ Return ONLY the JSON, no other text.
                 # Submit all search tasks
                 future_to_query = {}
                 for i, query in enumerate(search_queries, 1):
-                    future = executor.submit(self._semantic_search_worker, query, i)
+                    future = submit_with_context(executor, self._semantic_search_worker, query, i)
                     future_to_query[future] = (query, i)
                 
                 # Collect results as they complete
@@ -614,7 +615,7 @@ Return ONLY the JSON, no other text.
                 # Submit all search tasks
                 future_to_query = {}
                 for i, query in enumerate(additional_queries, 1):
-                    future = executor.submit(self._additional_search_worker, query, i, round_num)
+                    future = submit_with_context(executor, self._additional_search_worker, query, i, round_num)
                     future_to_query[future] = (query, i)
                 
                 # Collect results as they complete

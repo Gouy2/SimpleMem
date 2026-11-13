@@ -118,6 +118,42 @@ class APIAdapterTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 LLMClient().chat_completion([])
             self.assertEqual(request.call_count, 1)
+            from experiments.usage import summarize_usage
+            events = [json.loads(line) for line in Path(os.environ["SIMPLEMEM_API_LOG"]).read_text().splitlines()]
+            self.assertEqual(len(events), 1)
+            summary = summarize_usage(events)
+            self.assertEqual(summary["api_attempts"], {"chat": 1})
+            self.assertEqual(summary["invalid_responses"], 1)
+
+    def test_question_context_survives_nested_parallel_retrieval(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from simplemem.core.utils.api_metrics import api_event_context, record_api_event, submit_with_context
+        from simplemem.core.hybrid_retriever import HybridRetriever
+
+        def question(qa_index):
+            with api_event_context(qa_index=qa_index, condition="baseline"):
+                retriever = HybridRetriever(None, None, max_retrieval_workers=2)
+                def worker(query, index):
+                    with api_event_context(operation="semantic_search"):
+                        record_api_event(kind="embedding", status="ok", query_index=index)
+                    return []
+                retriever._semantic_search_worker = worker
+                retriever._execute_parallel_searches(["query A", "query B"])
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            with api_event_context(trial=2):
+                futures = [submit_with_context(pool, question, index) for index in (11, 22)]
+            for future in futures:
+                future.result()
+        record_api_event(kind="outside_task")
+        events = [json.loads(line) for line in Path(os.environ["SIMPLEMEM_API_LOG"]).read_text().splitlines()]
+        self.assertEqual(sum(event.get("qa_index") == 11 for event in events), 2)
+        self.assertEqual(sum(event.get("qa_index") == 22 for event in events), 2)
+        for event in events[:-1]:
+            self.assertEqual((event["trial"], event["condition"], event["operation"]),
+                             (2, "baseline", "semantic_search"))
+        self.assertNotIn("trial", events[-1])
+        self.assertNotIn("qa_index", events[-1])
 
 
 if __name__ == "__main__":

@@ -10,6 +10,10 @@ from simplemem.core.settings import settings as config
 from simplemem.core.utils.api_metrics import error_metadata, record_api_event
 
 
+class InvalidChatResponse(ValueError):
+    """The billed response was already logged, but cannot be used as an answer."""
+
+
 class LLMClient:
     """
     Unified LLM client interface
@@ -113,7 +117,7 @@ class LLMClient:
                         max_tokens=kwargs["max_tokens"], thinking=self.enable_thinking,
                     )
                     if not valid:
-                        raise ValueError("Chat response is empty or truncated")
+                        raise InvalidChatResponse("Chat response is empty or truncated")
                     return text
                 
                 # kwargs["stream"] = True
@@ -122,10 +126,13 @@ class LLMClient:
             except Exception as e:
                 # print(e)
                 last_exception = e
-                record_api_event(kind="chat", status="error", model=self.model,
-                                 attempt=attempt + 1,
-                                 elapsed_seconds=time.perf_counter() - started,
-                                 **error_metadata(e))
+                # Empty/truncated responses already have one event with usage.
+                # Do not count the same physical request again as an exception.
+                if not isinstance(e, InvalidChatResponse):
+                    record_api_event(kind="chat", status="error", model=self.model,
+                                     attempt=attempt + 1,
+                                     elapsed_seconds=time.perf_counter() - started,
+                                     **error_metadata(e))
                 status = getattr(e, "status_code", None)
                 if isinstance(e, ValueError) or (status is not None and status != 429 and status < 500):
                     raise
@@ -183,7 +190,7 @@ class LLMClient:
                          temperature=kwargs.get("temperature"), max_tokens=kwargs["max_tokens"],
                          thinking=self.enable_thinking)
         if not valid:
-            raise ValueError("Chat response is empty or truncated")
+            raise InvalidChatResponse("Chat response is empty or truncated")
         return text
 
     def extract_json(self, text: str) -> Any:

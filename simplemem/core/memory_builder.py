@@ -12,6 +12,7 @@ from simplemem.core.models.memory_entry import MemoryEntry, Dialogue
 from simplemem.core.utils.llm_client import LLMClient
 from simplemem.core.database.vector_store import VectorStore
 from simplemem.core.settings import settings as config
+from simplemem.core.utils.api_metrics import submit_with_context
 import json
 import asyncio
 import concurrent.futures
@@ -347,7 +348,7 @@ Now process the above dialogues. Return ONLY the JSON array, no other explanatio
             future_to_window = {}
             for i, window in enumerate(windows):
                 dialogue_ids = [d.dialogue_id for d in window]
-                future = executor.submit(self._generate_memory_entries_worker, window, dialogue_ids, i+1)
+                future = submit_with_context(executor, self._generate_memory_entries_worker, window, dialogue_ids, i+1)
                 future_to_window[future] = (window, i+1)
             
             # Collect results as they complete
