@@ -2,9 +2,12 @@
 LLM Client - Handles all LLM interactions
 """
 import json
+import time
+from urllib.parse import urlparse
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
 from simplemem.core.settings import settings as config
+from simplemem.core.utils.api_metrics import error_metadata, record_api_event
 
 
 class LLMClient:
@@ -38,6 +41,8 @@ class LLMClient:
         self.client = OpenAI(
             base_url=self.base_url,
             api_key=self.api_key,
+            timeout=config.API_TIMEOUT,
+            max_retries=0,
         )
 
     def chat_completion(
@@ -54,6 +59,7 @@ class LLMClient:
             "model": self.model,
             "messages": messages,
             "temperature": temperature,
+            "max_tokens": config.MAX_TOKENS,
         }
 
         if response_format:
@@ -73,19 +79,42 @@ class LLMClient:
             else:
                 # Explicitly set to False for non-streaming calls or JSON format
                 kwargs["extra_body"] = {"enable_thinking": False}
-        # For OpenAI and other APIs, don't add extra_body parameters
+        is_deepseek = urlparse(self.base_url or "").hostname == "api.deepseek.com"
+        if is_deepseek:
+            kwargs["extra_body"] = {"thinking": {
+                "type": "enabled" if self.enable_thinking else "disabled"
+            }}
+            if self.enable_thinking:
+                kwargs.pop("temperature")  # Not effective in DeepSeek thinking mode.
 
         # Retry mechanism
         last_exception = None
         for attempt in range(max_retries):
+            started = time.perf_counter()
             try:
                 # Use streaming if configured
                 if self.use_streaming:
                     kwargs["stream"] = True
+                    if is_deepseek:
+                        kwargs["stream_options"] = {"include_usage": True}
                     return self._handle_streaming_response(**kwargs)
                 else:
                     response = self.client.chat.completions.create(**kwargs)
-                    return response.choices[0].message.content
+                    text = response.choices[0].message.content
+                    finish = response.choices[0].finish_reason
+                    valid = bool(text and text.strip()) and finish != "length"
+                    record_api_event(
+                        kind="chat", status="ok" if valid else "invalid",
+                        model=self.model, response_model=response.model,
+                        request_id=response.id, attempt=attempt + 1,
+                        elapsed_seconds=time.perf_counter() - started,
+                        usage=response.usage.model_dump() if response.usage else None,
+                        finish_reason=finish, temperature=kwargs.get("temperature"),
+                        max_tokens=kwargs["max_tokens"], thinking=self.enable_thinking,
+                    )
+                    if not valid:
+                        raise ValueError("Chat response is empty or truncated")
+                    return text
                 
                 # kwargs["stream"] = True
                 # return self._handle_streaming_response(**kwargs)
@@ -93,14 +122,20 @@ class LLMClient:
             except Exception as e:
                 # print(e)
                 last_exception = e
+                record_api_event(kind="chat", status="error", model=self.model,
+                                 attempt=attempt + 1,
+                                 elapsed_seconds=time.perf_counter() - started,
+                                 **error_metadata(e))
+                status = getattr(e, "status_code", None)
+                if isinstance(e, ValueError) or (status is not None and status != 429 and status < 500):
+                    raise
                 if attempt < max_retries - 1:
-                    import time
                     wait_time = (2 ** attempt)  # Exponential backoff: 1s, 2s, 4s
-                    print(f"LLM API call failed (attempt {attempt + 1}/{max_retries}): {e}")
+                    print(f"LLM API call failed (attempt {attempt + 1}/{max_retries}): {type(e).__name__}")
                     print(f"Retrying in {wait_time} seconds...")
                     time.sleep(wait_time)
                 else:
-                    print(f"LLM API call failed after {max_retries} attempts: {e}")
+                    print(f"LLM API call failed after {max_retries} attempts: {type(e).__name__}")
         
         # If all retries failed, raise the last exception
         raise last_exception
@@ -110,7 +145,12 @@ class LLMClient:
         Handle streaming response and collect full content
         """
         full_content = []
+        started = time.perf_counter()
         stream = self.client.chat.completions.create(**kwargs)
+        usage = None
+        finish = None
+        response_model = None
+        request_id = None
 
         # for chunk in stream:
         #     if chunk.choices is not None:
@@ -119,6 +159,12 @@ class LLMClient:
         # print('---------')
 
         for chunk in stream:
+            response_model = chunk.model
+            request_id = chunk.id
+            if getattr(chunk, "usage", None):
+                usage = chunk.usage.model_dump()
+            if chunk.choices and chunk.choices[0].finish_reason:
+                finish = chunk.choices[0].finish_reason
             # print(chunk)
             # fix list index out of range
             if len(chunk.choices) > 0 and chunk.choices[0].delta.content is not None:
@@ -128,8 +174,17 @@ class LLMClient:
                 # Optional: print streaming content in real-time
                 # print(content, end='', flush=True)
         # print(full_content)
-        print()
-        return ''.join(full_content)
+        text = ''.join(full_content)
+        valid = bool(text.strip()) and finish != "length"
+        record_api_event(kind="chat", status="ok" if valid else "invalid",
+                         model=self.model, response_model=response_model,
+                         request_id=request_id, elapsed_seconds=time.perf_counter() - started,
+                         usage=usage, finish_reason=finish,
+                         temperature=kwargs.get("temperature"), max_tokens=kwargs["max_tokens"],
+                         thinking=self.enable_thinking)
+        if not valid:
+            raise ValueError("Chat response is empty or truncated")
+        return text
 
     def extract_json(self, text: str) -> Any:
         """

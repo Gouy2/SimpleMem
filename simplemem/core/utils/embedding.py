@@ -15,6 +15,15 @@ class EmbeddingModel:
     def __init__(self, model_name: str = None, use_optimization: bool = True):
         self.model_name = model_name or config.EMBEDDING_MODEL
         self.use_optimization = use_optimization
+
+        self._api_backend = None
+        if config.EMBEDDING_BACKEND == "openrouter":
+            from simplemem.core.utils.api_embedding import APIEmbeddingModel
+            self._api_backend = APIEmbeddingModel(self.model_name)
+            self.dimension = self._api_backend.dimension
+            self.model_type = self._api_backend.model_type
+            self.supports_query_prompt = True
+            return
         
         print(f"Loading embedding model: {self.model_name}")
         
@@ -104,6 +113,9 @@ class EmbeddingModel:
         """
         if isinstance(texts, str):
             texts = [texts]
+
+        if self._api_backend is not None:
+            return self._api_backend.encode(texts, is_query=is_query)
         
         # Use query prompt for Qwen3 models when encoding queries
         if self.model_type == "qwen3_sentence_transformer" and self.supports_query_prompt and is_query:

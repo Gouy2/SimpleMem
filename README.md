@@ -1,3 +1,6 @@
+> **Course reproducibility experiment:** [DeepSeek + OpenRouter text-memory setup and verification](experiments/README.md).
+> API connectivity has been verified; LoCoMo experiments are pending.
+
 <div align="center">
 
 <img alt="simplemem_logo" src="https://github.com/user-attachments/assets/6ea54ad1-e007-442c-99d7-1174b10d1fec" width="450">

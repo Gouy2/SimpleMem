@@ -61,6 +61,8 @@ env/
 /config.py
 *.env
 .env
+.env.*
+!.env.example
 
 # Database files
 *.db
@@ -76,7 +78,9 @@ evolution_results/
 # Test results
 locomo10_test_results.json
 test_results/
+.runs/
 *.json
+!experiments/results/api_smoke.json
 
 # Jupyter Notebook
 .ipynb_checkpoints
