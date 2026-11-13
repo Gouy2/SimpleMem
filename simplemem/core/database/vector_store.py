@@ -11,6 +11,7 @@ from simplemem.core.database.vector_store_backend import (
 from simplemem.core.models.memory_entry import MemoryEntry
 from simplemem.core.settings import settings as config
 from simplemem.core.utils.embedding import EmbeddingModel
+from simplemem.core.utils.api_metrics import record_pipeline_fallback
 
 
 BackendFactory = Callable[[int], VectorStoreBackend]
@@ -92,6 +93,7 @@ class VectorStore:
             )
             return self._results_to_entries(results)
         except Exception as error:
+            record_pipeline_fallback("semantic_search", error)
             print(f"Error during semantic search: {error}")
             return []
 
@@ -108,6 +110,7 @@ class VectorStore:
                 self.backend.keyword_search(keywords, top_k=top_k)
             )
         except Exception as error:
+            record_pipeline_fallback("keyword_search", error)
             print(f"Error during keyword search: {error}")
             return []
 
@@ -136,6 +139,7 @@ class VectorStore:
                 )
             )
         except Exception as error:
+            record_pipeline_fallback("structured_search", error)
             print(f"Error during structured search: {error}")
             return []
 
@@ -174,5 +178,6 @@ class VectorStore:
                     )
                 )
             except Exception as error:
+                record_pipeline_fallback("result_parsing", error)
                 print(f"Warning: Failed to parse result: {error}")
         return entries

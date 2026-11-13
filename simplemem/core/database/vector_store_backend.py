@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Protocol, Sequence
 
 import lancedb
 import pyarrow as pa
+from simplemem.core.utils.api_metrics import record_pipeline_fallback
 
 
 class ScoreOrder(str, Enum):
@@ -168,6 +169,7 @@ class LanceDBVectorStoreBackend:
                 print("FTS index created (Tantivy mode)")
             self._fts_initialized = True
         except Exception as error:
+            record_pipeline_fallback("fts_index", error)
             print(f"FTS index creation skipped: {error}")
 
     def insert(self, records: Sequence[VectorStoreRecord]) -> None:

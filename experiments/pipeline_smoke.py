@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from experiments.bootstrap import REPO_ROOT, load_environment
 from experiments.locomo import DATA_SHA256, conversation_to_dialogues, load_dataset, memory_digest, score_answer
 from experiments.usage import summarize_usage
-from simplemem.core.utils.api_metrics import current_api_event_context
+from simplemem.core.utils.api_metrics import current_api_event_context, api_event_context
 
 
 def finalize_usage(result, run_dir):
@@ -43,7 +43,8 @@ class PipelineTrace:
             if stage == "memory_window":
                 event["dialogue_ids"] = [d.dialogue_id for d in args[0]]
             try:
-                value = original(*args, **kwargs)
+                with api_event_context(operation=stage):
+                    value = original(*args, **kwargs)
                 event["status"] = "ok"
                 if isinstance(value, list):
                     event["result_count"] = len(value)
@@ -65,10 +66,16 @@ class PipelineTrace:
         for method, stage in [
             ("_analyze_information_requirements", "planning"),
             ("_generate_targeted_queries", "query_generation"),
+            ("_analyze_query", "query_analysis"),
             ("_retrieve_with_intelligent_reflection", "reflection"),
             ("_analyze_information_completeness", "completeness_check"),
+            ("_generate_missing_info_queries", "additional_query_generation"),
+            ("_semantic_search", "semantic_search"),
+            ("_keyword_search", "keyword_search"),
+            ("_structured_search", "structured_search"),
         ]:
             self.wrap(system.hybrid_retriever, method, stage)
+        self.wrap(system.answer_generator, "generate_answer", "answer_generation")
 
 
 def main():

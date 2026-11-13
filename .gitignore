@@ -84,6 +84,8 @@ test_results/
 !experiments/results/pipeline_smoke.json
 !experiments/configs/data_manifest.json
 !experiments/configs/design.json
+!experiments/results/formal_summary.json
+!experiments/results/formal_manifest.json
 
 # Jupyter Notebook
 .ipynb_checkpoints

@@ -93,8 +93,61 @@ and three independent paired trials. The pilot question is excluded. See
 [DESIGN.md](DESIGN.md) for the original-paper reference, scoring definition,
 model/code differences, sampling and cost-measurement limitations.
 
+## Stage 3: formal paired evaluation (macOS/Linux)
+
+```bash
+.venv/bin/python -m unittest experiments.test_api_adapters experiments.test_locomo_helpers experiments.test_formal_runner -v
+.venv/bin/python -u -m experiments.run_formal
+```
+
+The runner prints a new `.runs/formal-<id>` directory. It makes billable requests
+for the frozen design: three independent builds for each of two conversations,
+and 24 questions under each reflection condition in each trial (144 QA rows).
+It uses an advisory process lock and atomic per-build/per-question checkpoints.
+The code/dependency content fingerprint, environment, effective settings, data
+version and frozen selection are stored before any model calls.
+
+To resume a particular run, keep its source and settings unchanged:
+
+```bash
+.venv/bin/python -u -m experiments.run_formal --run-dir .runs/formal-<id>
+```
+
+Completed rows, including failed ones, are not repeated. Incomplete memory builds
+are preserved and stop automatic recovery; inspect them rather than silently
+rebuilding or deleting data. Source/settings/environment mismatch also refuses
+resume. Do not edit the experiment's Python code during a live run.
+
+Offline re-export (no model calls):
+
+```bash
+.venv/bin/python -m experiments.run_formal --run-dir .runs/formal-<id> --summarize-only
+```
+
+Outputs in `experiments/results/`:
+
+- `formal_manifest.json`: source hashes, runtime dependencies, frozen protocol.
+- `formal_rows.csv` and `formal_rows.jsonl`: all scheduled QA identities, answers,
+  references, scores, status, latency and measured usage.
+- `formal_summary.json`: per-trial/per-category results, sample variance/std over
+  three trials, paired ablation-minus-baseline differences, construction and
+  condition-batch records, and recorded API usage.
+
+Partial runs export `status=partial` without full aggregate claims. Missing or
+duplicate identities are checked. Internal upstream fallback is instrumented
+without changing fallback behavior: such rows get primary F1=0 but retain the
+actual answer/raw score and fallback metadata. Recovered request retries retain
+their actual answer score and all recorded attempts. Read-only memory and actual
+reflection-method invocation are verified. All condition futures finish before
+the shared system's reflection setting changes.
+
+Detailed contexts, traces, API metadata and databases stay in ignored `.runs/`.
+Use task tags for concurrent attribution; do not slice the global log by line
+number. Batch wall time, per-question latency and summed request time are distinct.
+
 ## Remaining work
 
-Implement the formal experiment runner with per-question outputs, retries/errors,
-resume support and per-trial summaries; run the frozen reflection-on/off design.
-No formal benchmark results are available yet.
+All 144 formal rows and six independent memory builds are complete and audited.
+See [RESULTS.md](results/RESULTS.md) for tables, per-trial differences and limitations.
+Actual resume of the completed run made zero additional API calls. The remaining
+deliverables are the brief report and recorded presentation.

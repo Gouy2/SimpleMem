@@ -8,6 +8,7 @@ from typing import List
 from simplemem.core.models.memory_entry import MemoryEntry
 from simplemem.core.utils.llm_client import LLMClient
 from simplemem.core.settings import settings as config
+from simplemem.core.utils.api_metrics import record_pipeline_fallback
 
 
 class AnswerGenerator:
@@ -75,6 +76,7 @@ class AnswerGenerator:
                 if attempt < max_retries - 1:
                     print(f"Answer generation attempt {attempt + 1}/{max_retries} failed: {e}. Retrying...")
                 else:
+                    record_pipeline_fallback("answer_generation", e)
                     print(f"Warning: Failed to parse JSON response after {max_retries} attempts: {e}")
                     # Fallback to raw response
                     if 'response' in locals():

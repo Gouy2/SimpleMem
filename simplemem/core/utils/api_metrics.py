@@ -47,3 +47,8 @@ def record_api_event(**event):
 def error_metadata(error):
     return {"error_type": type(error).__name__,
             "status_code": getattr(error, "status_code", None)}
+
+
+def record_pipeline_fallback(stage, error):
+    record_api_event(kind="pipeline_fallback", fallback_stage=stage,
+                     status="degraded", **error_metadata(error))

@@ -11,7 +11,7 @@ from simplemem.core.models.memory_entry import MemoryEntry
 from simplemem.core.utils.llm_client import LLMClient
 from simplemem.core.database.vector_store import VectorStore
 from simplemem.core.settings import settings as config
-from simplemem.core.utils.api_metrics import submit_with_context
+from simplemem.core.utils.api_metrics import submit_with_context, record_pipeline_fallback
 import re
 from datetime import datetime, timedelta
 import dateparser
@@ -229,6 +229,7 @@ Return ONLY JSON, no other content.
                 if attempt < max_retries - 1:
                     print(f"Query analysis attempt {attempt + 1}/{max_retries} failed: {e}. Retrying...")
                 else:
+                    record_pipeline_fallback("query_analysis", e)
                     print(f"Query analysis failed after {max_retries} attempts: {e}")
                     # Return default values
                     return {
@@ -581,9 +582,11 @@ Return ONLY the JSON, no other text.
                         all_results.extend(results)
                         print(f"[Parallel Search] Query {query_num} completed: {len(results)} results")
                     except Exception as e:
+                        record_pipeline_fallback("parallel_semantic_search", e)
                         print(f"[Parallel Search] Query {query_num} failed: {e}")
                         
         except Exception as e:
+            record_pipeline_fallback("parallel_search", e)
             print(f"[Parallel Search] Parallel execution failed: {e}. Falling back to sequential search...")
             # Fallback to sequential processing
             for i, query in enumerate(search_queries, 1):
@@ -592,6 +595,7 @@ Return ONLY the JSON, no other text.
                     results = self._semantic_search(query)
                     all_results.extend(results)
                 except Exception as search_e:
+                    record_pipeline_fallback("sequential_search", search_e)
                     print(f"[Sequential Search {i}] Failed: {search_e}")
         
         return all_results
@@ -626,9 +630,11 @@ Return ONLY the JSON, no other text.
                         all_results.extend(results)
                         print(f"[Reflection Round {round_num}] Additional query {query_num} completed: {len(results)} results")
                     except Exception as e:
+                        record_pipeline_fallback("parallel_additional_search", e)
                         print(f"[Reflection Round {round_num}] Additional query {query_num} failed: {e}")
                         
         except Exception as e:
+            record_pipeline_fallback("additional_search", e)
             print(f"[Reflection Round {round_num}] Parallel execution failed: {e}. Falling back to sequential search...")
             # Fallback to sequential processing
             for i, query in enumerate(additional_queries, 1):
@@ -637,6 +643,7 @@ Return ONLY the JSON, no other text.
                     results = self._semantic_search(query)
                     all_results.extend(results)
                 except Exception as search_e:
+                    record_pipeline_fallback("additional_sequential_search", search_e)
                     print(f"[Additional Search {i}] Failed: {search_e}")
         
         return all_results
@@ -707,6 +714,7 @@ Return ONLY the JSON, no other text.
             return result
             
         except Exception as e:
+            record_pipeline_fallback("information_requirements", e)
             print(f"Failed to analyze information requirements: {e}")
             # Fallback to simple analysis
             return {
@@ -788,6 +796,7 @@ Return ONLY the JSON, no other text.
             return queries
             
         except Exception as e:
+            record_pipeline_fallback("targeted_queries", e)
             print(f"Failed to generate targeted queries: {e}")
             # Fallback to original query
             return [original_query]
@@ -902,6 +911,7 @@ Return ONLY the JSON, no other text.
             return assessment
             
         except Exception as e:
+            record_pipeline_fallback("information_completeness", e)
             print(f"Failed to analyze information completeness: {e}")
             return "incomplete"
     
@@ -966,5 +976,6 @@ Return ONLY the JSON, no other text.
             return queries
             
         except Exception as e:
+            record_pipeline_fallback("missing_info_queries", e)
             print(f"Failed to generate missing info queries: {e}")
             return []

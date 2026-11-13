@@ -1,5 +1,5 @@
 > **Course reproducibility experiment:** [DeepSeek + OpenRouter text-memory setup and verification](experiments/README.md).
-> API connectivity and a full-conversation LoCoMo pilot have been verified; formal paired trials are pending.
+> Three paired LoCoMo subset trials are complete: [measured results and limitations](experiments/results/RESULTS.md).
 
 <div align="center">
 

@@ -1,0 +1,603 @@
+{
+  "status": "complete",
+  "scheduled_rows": 144,
+  "completed_rows": 144,
+  "missing_jobs": [],
+  "failed_rows": 0,
+  "trials": [
+    {
+      "trial": 0,
+      "baseline": {
+        "category_f1": {
+          "1": 0.3168765931923827,
+          "2": 0.9074074074074074,
+          "3": 0.14363044363044364,
+          "4": 0.48547979797979796
+        },
+        "category_macro_f1": 0.46334856055250795,
+        "question_mean_f1": 0.46334856055250795,
+        "exact_match": 0.08333333333333333,
+        "failed_rows": 0,
+        "mean_qa_seconds": 11.278265566031527,
+        "chat_calls_per_question": 6.25,
+        "chat_tokens_per_question": 12024.166666666666
+      },
+      "ablation": {
+        "category_f1": {
+          "1": 0.31321358952937906,
+          "2": 0.8240740740740741,
+          "3": 0.117989417989418,
+          "4": 0.385479797979798
+        },
+        "category_macro_f1": 0.41018921989316726,
+        "question_mean_f1": 0.41018921989316726,
+        "exact_match": 0.041666666666666664,
+        "failed_rows": 0,
+        "mean_qa_seconds": 5.610877482691042,
+        "chat_calls_per_question": 4,
+        "chat_tokens_per_question": 4439.791666666667
+      },
+      "paired_delta_ablation_minus_baseline": -0.05315934065934069
+    },
+    {
+      "trial": 1,
+      "baseline": {
+        "category_f1": {
+          "1": 0.36936483995307523,
+          "2": 0.8518518518518519,
+          "3": 0.14141936968023927,
+          "4": 0.34590246354952237
+        },
+        "category_macro_f1": 0.4271346312586722,
+        "question_mean_f1": 0.4271346312586722,
+        "exact_match": 0.08333333333333333,
+        "failed_rows": 0,
+        "mean_qa_seconds": 9.153323543355024,
+        "chat_calls_per_question": 6.125,
+        "chat_tokens_per_question": 11367.625
+      },
+      "ablation": {
+        "category_f1": {
+          "1": 0.2672079772079772,
+          "2": 0.8518518518518519,
+          "3": 0.1283068783068783,
+          "4": 0.4263888888888889
+        },
+        "category_macro_f1": 0.4184388990638991,
+        "question_mean_f1": 0.4184388990638991,
+        "exact_match": 0.08333333333333333,
+        "failed_rows": 0,
+        "mean_qa_seconds": 5.058100960217416,
+        "chat_calls_per_question": 4,
+        "chat_tokens_per_question": 4558.208333333333
+      },
+      "paired_delta_ablation_minus_baseline": -0.008695732194773098
+    },
+    {
+      "trial": 2,
+      "baseline": {
+        "category_f1": {
+          "1": 0.3107142857142857,
+          "2": 0.7685185185185185,
+          "3": 0.11569200779727096,
+          "4": 0.4179662118258609
+        },
+        "category_macro_f1": 0.40322275596398405,
+        "question_mean_f1": 0.40322275596398405,
+        "exact_match": 0.08333333333333333,
+        "failed_rows": 0,
+        "mean_qa_seconds": 10.316309548608842,
+        "chat_calls_per_question": 6.458333333333333,
+        "chat_tokens_per_question": 13387.25
+      },
+      "ablation": {
+        "category_f1": {
+          "1": 0.30024296675191814,
+          "2": 0.8316498316498316,
+          "3": 0.117989417989418,
+          "4": 0.5069444444444444
+        },
+        "category_macro_f1": 0.43920666520890306,
+        "question_mean_f1": 0.43920666520890306,
+        "exact_match": 0.08333333333333333,
+        "failed_rows": 0,
+        "mean_qa_seconds": 5.41374879340583,
+        "chat_calls_per_question": 4,
+        "chat_tokens_per_question": 4623.791666666667
+      },
+      "paired_delta_ablation_minus_baseline": 0.03598390924491901
+    }
+  ],
+  "conditions": {
+    "baseline": {
+      "category_macro_f1": {
+        "mean": 0.4312353159250547,
+        "sample_variance": 0.0009163898054041691,
+        "sample_std": 0.03027193098241619,
+        "values": [
+          0.46334856055250795,
+          0.4271346312586722,
+          0.40322275596398405
+        ]
+      },
+      "question_mean_f1": {
+        "mean": 0.4312353159250547,
+        "sample_variance": 0.0009163898054041691,
+        "sample_std": 0.03027193098241619,
+        "values": [
+          0.46334856055250795,
+          0.4271346312586722,
+          0.40322275596398405
+        ]
+      },
+      "exact_match": {
+        "mean": 0.08333333333333333,
+        "sample_variance": 0.0,
+        "sample_std": 0.0,
+        "values": [
+          0.08333333333333333,
+          0.08333333333333333,
+          0.08333333333333333
+        ]
+      },
+      "mean_qa_seconds": {
+        "mean": 10.24929955266513,
+        "sample_variance": 1.1322124046014093,
+        "sample_std": 1.0640547000043792,
+        "values": [
+          11.278265566031527,
+          9.153323543355024,
+          10.316309548608842
+        ]
+      },
+      "chat_calls_per_question": {
+        "mean": 6.277777777777778,
+        "sample_variance": 0.028356481481481427,
+        "sample_std": 0.16839382851364068,
+        "values": [
+          6.25,
+          6.125,
+          6.458333333333333
+        ]
+      },
+      "chat_tokens_per_question": {
+        "mean": 12259.680555555555,
+        "sample_variance": 1061321.379050926,
+        "sample_std": 1030.2045326297716,
+        "values": [
+          12024.166666666666,
+          11367.625,
+          13387.25
+        ]
+      },
+      "category_f1": {
+        "1": {
+          "mean": 0.3323185729532479,
+          "sample_variance": 0.001038812932330525,
+          "sample_std": 0.032230621035445856,
+          "values": [
+            0.3168765931923827,
+            0.36936483995307523,
+            0.3107142857142857
+          ]
+        },
+        "2": {
+          "mean": 0.8425925925925926,
+          "sample_variance": 0.004886831275720169,
+          "sample_std": 0.06990587440065513,
+          "values": [
+            0.9074074074074074,
+            0.8518518518518519,
+            0.7685185185185185
+          ]
+        },
+        "3": {
+          "mean": 0.13358060703598462,
+          "sample_variance": 0.00024122369904579842,
+          "sample_std": 0.015531377886259752,
+          "values": [
+            0.14363044363044364,
+            0.14141936968023927,
+            0.11569200779727096
+          ]
+        },
+        "4": {
+          "mean": 0.41644949111839374,
+          "sample_variance": 0.004872183402943594,
+          "sample_std": 0.06980102723415747,
+          "values": [
+            0.48547979797979796,
+            0.34590246354952237,
+            0.4179662118258609
+          ]
+        }
+      }
+    },
+    "ablation": {
+      "category_macro_f1": {
+        "mean": 0.4226115947219898,
+        "sample_variance": 0.00022356157495421623,
+        "sample_std": 0.014951975620439468,
+        "values": [
+          0.41018921989316726,
+          0.4184388990638991,
+          0.43920666520890306
+        ]
+      },
+      "question_mean_f1": {
+        "mean": 0.4226115947219898,
+        "sample_variance": 0.00022356157495421623,
+        "sample_std": 0.014951975620439468,
+        "values": [
+          0.41018921989316726,
+          0.4184388990638991,
+          0.43920666520890306
+        ]
+      },
+      "exact_match": {
+        "mean": 0.06944444444444445,
+        "sample_variance": 0.0005787037037037037,
+        "sample_std": 0.024056261216234404,
+        "values": [
+          0.041666666666666664,
+          0.08333333333333333,
+          0.08333333333333333
+        ]
+      },
+      "mean_qa_seconds": {
+        "mean": 5.36090907877143,
+        "sample_variance": 0.0784844975314924,
+        "sample_std": 0.28015084781505195,
+        "values": [
+          5.610877482691042,
+          5.058100960217416,
+          5.41374879340583
+        ]
+      },
+      "chat_calls_per_question": {
+        "mean": 4,
+        "sample_variance": 0,
+        "sample_std": 0.0,
+        "values": [
+          4,
+          4,
+          4
+        ]
+      },
+      "chat_tokens_per_question": {
+        "mean": 4540.597222222223,
+        "sample_variance": 8696.613425925916,
+        "sample_std": 93.25563482131209,
+        "values": [
+          4439.791666666667,
+          4558.208333333333,
+          4623.791666666667
+        ]
+      },
+      "category_f1": {
+        "1": {
+          "mean": 0.29355484449642477,
+          "sample_variance": 0.0005626773257451002,
+          "sample_std": 0.023720820511632816,
+          "values": [
+            0.31321358952937906,
+            0.2672079772079772,
+            0.30024296675191814
+          ]
+        },
+        "2": {
+          "mean": 0.8358585858585859,
+          "sample_variance": 0.00020618644356018115,
+          "sample_std": 0.014359193694639722,
+          "values": [
+            0.8240740740740741,
+            0.8518518518518519,
+            0.8316498316498316
+          ]
+        },
+        "3": {
+          "mean": 0.12142857142857144,
+          "sample_variance": 3.5483329134122726e-05,
+          "sample_std": 0.005956788491638991,
+          "values": [
+            0.117989417989418,
+            0.1283068783068783,
+            0.117989417989418
+          ]
+        },
+        "4": {
+          "mean": 0.4396043771043771,
+          "sample_variance": 0.003819401931775668,
+          "sample_std": 0.061801310113748134,
+          "values": [
+            0.385479797979798,
+            0.4263888888888889,
+            0.5069444444444444
+          ]
+        }
+      }
+    }
+  },
+  "paired_delta_ablation_minus_baseline": {
+    "mean": -0.008623721203064927,
+    "sample_variance": 0.0019866336400605196,
+    "sample_std": 0.044571668580618784,
+    "values": [
+      -0.05315934065934069,
+      -0.008695732194773098,
+      0.03598390924491901
+    ]
+  },
+  "run_id": "formal-20261113T121702561909Z",
+  "source_fingerprint": "e5db3e5cebb3f713a12f829572acaeec2130ded16aa9cf5ccc5692fd95a11163",
+  "total_recorded_api_usage": {
+    "api_attempts": {
+      "chat": 803,
+      "embedding": 335
+    },
+    "errors": 0,
+    "invalid_responses": 0,
+    "chat_input_tokens": 1286828,
+    "chat_output_tokens": 410980,
+    "embedding_input_tokens": 94525,
+    "reported_embedding_cost_usd": 0.00111169,
+    "embedding_cache_hits": 905,
+    "summed_request_seconds": 2418.710596843739
+  },
+  "builds": [
+    {
+      "trial": 0,
+      "sample_index": 0,
+      "memory_count": 472,
+      "elapsed_seconds": 94.90185412496794,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 11,
+          "embedding": 13
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 29483,
+        "chat_output_tokens": 60911,
+        "embedding_input_tokens": 17288,
+        "reported_embedding_cost_usd": 0.00021542,
+        "embedding_cache_hits": 78,
+        "summed_request_seconds": 226.6199352510739
+      }
+    },
+    {
+      "trial": 0,
+      "sample_index": 1,
+      "memory_count": 366,
+      "elapsed_seconds": 72.04639604210388,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 10,
+          "embedding": 12
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 23987,
+        "chat_output_tokens": 48135,
+        "embedding_input_tokens": 17265,
+        "reported_embedding_cost_usd": 0.00022707,
+        "embedding_cache_hits": 0,
+        "summed_request_seconds": 174.97305733256508
+      }
+    },
+    {
+      "trial": 1,
+      "sample_index": 0,
+      "memory_count": 458,
+      "elapsed_seconds": 76.57591012504417,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 11,
+          "embedding": 10
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 29483,
+        "chat_output_tokens": 59498,
+        "embedding_input_tokens": 14027,
+        "reported_embedding_cost_usd": 0.00014027,
+        "embedding_cache_hits": 166,
+        "summed_request_seconds": 209.3317868328886
+      }
+    },
+    {
+      "trial": 1,
+      "sample_index": 1,
+      "memory_count": 368,
+      "elapsed_seconds": 60.993682375061326,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 10,
+          "embedding": 7
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 23987,
+        "chat_output_tokens": 49623,
+        "embedding_input_tokens": 11392,
+        "reported_embedding_cost_usd": 0.00011392000000000001,
+        "embedding_cache_hits": 161,
+        "summed_request_seconds": 168.04013650072739
+      }
+    },
+    {
+      "trial": 2,
+      "sample_index": 0,
+      "memory_count": 457,
+      "elapsed_seconds": 83.86460308299866,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 11,
+          "embedding": 9
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 29483,
+        "chat_output_tokens": 60624,
+        "embedding_input_tokens": 14811,
+        "reported_embedding_cost_usd": 0.00020931000000000001,
+        "embedding_cache_hits": 170,
+        "summed_request_seconds": 218.57085516687948
+      }
+    },
+    {
+      "trial": 2,
+      "sample_index": 1,
+      "memory_count": 367,
+      "elapsed_seconds": 61.25575237500016,
+      "usage_summary": {
+        "api_attempts": {
+          "chat": 10,
+          "embedding": 7
+        },
+        "errors": 0,
+        "invalid_responses": 0,
+        "chat_input_tokens": 23987,
+        "chat_output_tokens": 48987,
+        "embedding_input_tokens": 11915,
+        "reported_embedding_cost_usd": 0.00011915,
+        "embedding_cache_hits": 145,
+        "summed_request_seconds": 166.43686074879952
+      }
+    }
+  ],
+  "condition_batches": [
+    {
+      "trial": 0,
+      "sample_index": 0,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 57.70735062507447
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "sample_index": 0,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 115.19997149996925
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "sample_index": 1,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 13.110267583979294
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "sample_index": 1,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 26.620573958032764
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "sample_index": 0,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 50.788963458966464
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "sample_index": 0,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 95.00246237497777
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "sample_index": 1,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 13.323480124934576
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "sample_index": 1,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 23.879400708014145
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "sample_index": 0,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 55.25958662503399
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "sample_index": 0,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 19,
+          "wall_seconds": 100.55730924999807
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "sample_index": 1,
+      "condition": "ablation",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 14.920427624951117
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "sample_index": 1,
+      "condition": "baseline",
+      "segments": [
+        {
+          "completed_in_segment": 5,
+          "wall_seconds": 26.764219417003915
+        }
+      ]
+    }
+  ]
+}

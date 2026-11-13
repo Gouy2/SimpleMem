@@ -12,7 +12,7 @@ from simplemem.core.models.memory_entry import MemoryEntry, Dialogue
 from simplemem.core.utils.llm_client import LLMClient
 from simplemem.core.database.vector_store import VectorStore
 from simplemem.core.settings import settings as config
-from simplemem.core.utils.api_metrics import submit_with_context
+from simplemem.core.utils.api_metrics import submit_with_context, record_pipeline_fallback
 import json
 import asyncio
 import concurrent.futures
@@ -117,6 +117,7 @@ class MemoryBuilder:
                 self._process_windows_parallel(windows_to_process)
 
         except Exception as e:
+            record_pipeline_fallback("parallel_memory_build", e)
             print(f"[Parallel Processing] Failed: {e}. Falling back to sequential processing...")
             # Fallback: overlapping windows cannot be re-stacked naively.
             # If the buffer was cleared (exception after line 107), restore the full
@@ -223,6 +224,7 @@ class MemoryBuilder:
                     print(f"Attempt {attempt + 1}/{max_retries} failed to parse LLM response: {e}")
                     print(f"Retrying...")
                 else:
+                    record_pipeline_fallback("memory_extraction", e)
                     print(f"All {max_retries} attempts failed to parse LLM response: {e}")
                     print(f"Raw response: {response[:500] if 'response' in locals() else 'No response'}")
                     return []
@@ -359,6 +361,7 @@ Now process the above dialogues. Return ONLY the JSON array, no other explanatio
                     all_entries.extend(entries)
                     print(f"[Parallel Processing] Window {window_num} completed: {len(entries)} entries")
                 except Exception as e:
+                    record_pipeline_fallback("memory_window", e)
                     print(f"[Parallel Processing] Window {window_num} failed: {e}")
         
         # Store all entries to database in batch
@@ -430,5 +433,6 @@ Now process the above dialogues. Return ONLY the JSON array, no other explanatio
                 if attempt < max_retries - 1:
                     print(f"[Worker {window_num}] Attempt {attempt + 1}/{max_retries} failed: {e}. Retrying...")
                 else:
+                    record_pipeline_fallback("memory_extraction", e)
                     print(f"[Worker {window_num}] All {max_retries} attempts failed: {e}")
                     return []
