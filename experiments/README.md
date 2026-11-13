@@ -69,8 +69,29 @@ References: [DeepSeek thinking mode](https://api-docs.deepseek.com/guides/thinki
 [OpenRouter embeddings](https://openrouter.ai/docs/api/api-reference/embeddings/submit-an-embedding-request),
 [Qwen embedding model card](https://huggingface.co/Qwen/Qwen3-Embedding-8B).
 
+## Stage 2: pinned data and full-conversation pilot
+
+```bash
+.venv/bin/python -m experiments.prepare_locomo
+.venv/bin/python -m unittest experiments.test_api_adapters experiments.test_locomo_helpers -v
+.venv/bin/python -m experiments.pipeline_smoke
+.venv/bin/python -m experiments.freeze_design
+```
+
+Data preparation downloads only when needed and always validates the pinned
+SHA-256. The complete data is cached locally, not committed. The pipeline pilot
+builds memory from all 419 turns of the first official conversation, answers one
+question under both reflection settings, verifies method traces and read-only
+memory, and saves `results/pipeline_smoke.json`. It makes billable API calls and
+can take several minutes; no need to rerun it merely to read the saved evidence.
+
+`configs/design.json` fixes 24 questions (six per category), two full conversations
+and three independent paired trials. The pilot question is excluded. See
+[DESIGN.md](DESIGN.md) for the original-paper reference, scoring definition,
+model/code differences, sampling and cost-measurement limitations.
+
 ## Remaining work
 
-Freeze a LoCoMo subset, finish the lightweight evaluator, verify the full memory
-pipeline, and run reflection-on/off comparisons. No formal benchmark results are
-available yet.
+Implement the formal experiment runner with per-question outputs, retries/errors,
+resume support and per-trial summaries; run the frozen reflection-on/off design.
+No formal benchmark results are available yet.

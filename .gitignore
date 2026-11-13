@@ -81,6 +81,9 @@ test_results/
 .runs/
 *.json
 !experiments/results/api_smoke.json
+!experiments/results/pipeline_smoke.json
+!experiments/configs/data_manifest.json
+!experiments/configs/design.json
 
 # Jupyter Notebook
 .ipynb_checkpoints
